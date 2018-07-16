@@ -42,8 +42,8 @@ var ( // flags
 func init() {
 	flag.BoolVar(&listLintsJSON, "list-lints-json", false, "Print supported lints in JSON format, one per line")
 	flag.BoolVar(&listLintsSchema, "list-lints-schema", false, "Print supported lints as a ZSchema")
-	flag.StringVar(&format, "format", "pem", "One of {pem, der, base64}")
-	flag.BoolVar(&prettyprint, "pretty", false, "Pretty-print output")
+	flag.StringVar(&format, "format", "der", "One of {pem, der, base64}")
+	flag.BoolVar(&prettyprint, "pretty", true, "Pretty-print output")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [flags] file...\n", os.Args[0])
 		flag.PrintDefaults()

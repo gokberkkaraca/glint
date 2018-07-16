@@ -117,5 +117,7 @@ vendor/
 ### Build Targets ###
 /zlint
 cmd/zlint/zlint
-
-
+result.txt
+der_certificates/
+pem_certificates/
+txt_certificates/
