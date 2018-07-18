@@ -84,14 +84,14 @@ func main() {
 			if err != nil {
 				log.Fatalf("unable to open file %s: %s", filePath, err)
 			}
-			var fmt = inform
+			var cert_fmt = inform
 			switch {
 			case strings.HasSuffix(filePath, ".der"):
-				fmt = "der"
+				cert_fmt = "der"
 			case strings.HasSuffix(filePath, ".pem"):
-				fmt = "pem"
+				cert_fmt = "pem"
 			}
-			lint(inputFile, fmt)
+			lint(inputFile, cert_fmt)
 			inputFile.Close()
 		}
 	}
