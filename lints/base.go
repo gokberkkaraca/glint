@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
 )
 
 var (
@@ -101,9 +100,6 @@ func (l *Lint) CheckEffective(c *x509.Certificate) bool {
 // CheckEffective()
 // Execute()
 func (l *Lint) Execute(cert *x509.Certificate) *LintResult {
-	if l.Source == CABFBaselineRequirements && !util.IsServerAuthCert(cert) {
-		return &LintResult{Status: NA}
-	}
 	if !l.Lint.CheckApplies(cert) {
 		return &LintResult{Status: NA}
 	} else if !l.CheckEffective(cert) {
