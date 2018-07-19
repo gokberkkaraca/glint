@@ -48,6 +48,7 @@ type LintSource int
 const (
 	UnknownLintSource LintSource = iota
 	CABFBaselineRequirements
+	MinimumRequirementsForCodeSigningCertificates
 	RFC5280
 	RFC5891
 	ZLint

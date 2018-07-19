@@ -17,20 +17,20 @@ package lints
 import (
 	"testing"
 )
-
-func TestCnNotFromSAN(t *testing.T) {
-	inputPath := "../testlint/testCerts/SANWithMissingCN.pem"
-	expected := Error
-	out := Lints["e_subject_common_name_not_from_san"].Execute(ReadCertificate(inputPath))
+// TODO Change test according to modified lint.
+func TestCN(t *testing.T) {
+	inputPath := "../testlint/testCerts/commonNamesURL.pem"
+	expected := Pass
+	out := Lints["n_subject_common_name_included"].Execute(ReadCertificate(inputPath))
 	if out.Status != expected {
 		t.Errorf("%s: expected %s, got %s", inputPath, expected, out.Status)
 	}
 }
 
-func TestCnFromSAN(t *testing.T) {
-	inputPath := "../testlint/testCerts/SANRegisteredIdBeginning.pem"
-	expected := Pass
-	out := Lints["e_subject_common_name_not_from_san"].Execute(ReadCertificate(inputPath))
+func TestNoCN(t *testing.T) {
+	inputPath := "../testlint/testCerts/commonNamesGood.pem"
+	expected := Error
+	out := Lints["n_subject_common_name_included"].Execute(ReadCertificate(inputPath))
 	if out.Status != expected {
 		t.Errorf("%s: expected %s, got %s", inputPath, expected, out.Status)
 	}

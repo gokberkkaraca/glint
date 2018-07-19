@@ -15,8 +15,8 @@ package lints
  */
 
 /***************************************************************
-BRs: 7.1.4.2.2
-Required/Optional: Deprecated (Discouraged, but not prohibited)
+MRfCSC: 9.2.2
+Required/Optional: Required
 ***************************************************************/
 
 import (
@@ -35,20 +35,20 @@ func (l *commonNames) CheckApplies(c *x509.Certificate) bool {
 }
 
 func (l *commonNames) Execute(c *x509.Certificate) *LintResult {
-	if c.Subject.CommonName == "" {
+	if c.Subject.CommonName != "" {
 		return &LintResult{Status: Pass}
 	} else {
-		return &LintResult{Status: Notice}
+		return &LintResult{Status: Error}
 	}
 }
 
 func init() {
 	RegisterLint(&Lint{
-		Name:          "n_subject_common_name_included",
-		Description:   "Subscriber Certificate: commonName is deprecated.",
-		Citation:      "BRs: 7.1.4.2.2",
-		Source:        CABFBaselineRequirements,
-		EffectiveDate: util.CABEffectiveDate,
+		Name:          "e_subject_common_name_missing",
+		Description:   "Subscriber Certificate: commonName is required.",
+		Citation:      "MRfCSC: 9.2.2",
+		Source:        MinimumRequirementsForCodeSigningCertificates,
+		EffectiveDate: util.MRfCSCEffectiveDate,
 		Lint:          &commonNames{},
 	})
 }
