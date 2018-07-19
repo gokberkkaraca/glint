@@ -18,6 +18,7 @@ import (
 	"testing"
 )
 
+// TODO Modify test according to code signing minimum requirements
 func TestSubCertLocalityNameMustAppear(t *testing.T) {
 	inputPath := "../testlint/testCerts/subCertLocalityNameMustAppear.pem"
 	expected := Error

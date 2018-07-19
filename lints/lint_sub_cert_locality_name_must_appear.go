@@ -30,23 +30,20 @@ func (l *subCertLocalityNameMustAppear) CheckApplies(c *x509.Certificate) bool {
 }
 
 func (l *subCertLocalityNameMustAppear) Execute(c *x509.Certificate) *LintResult {
-	if len(c.Subject.Organization) > 0 || len(c.Subject.GivenName) > 0 || len(c.Subject.Surname) > 0 {
-		if len(c.Subject.Province) == 0 {
-			if len(c.Subject.Locality) == 0 {
-				return &LintResult{Status: Error}
-			}
-		}
+	if !util.TypeInName(&c.Subject, util.StateOrProvinceNameOID) && !util.TypeInName(&c.Subject, util.LocalityNameOID) {
+		return &LintResult{Status: Error}
+	} else {
+		return &LintResult{Status: Pass}
 	}
-	return &LintResult{Status: Pass}
 }
 
 func init() {
 	RegisterLint(&Lint{
 		Name:          "e_sub_cert_locality_name_must_appear",
-		Description:   "Subscriber Certificate: subject:localityName MUST appear if subject:organizationName, subject:givenName, or subject:surname fields are present but the subject:stateOrProvinceName field is absent.",
-		Citation:      "BRs: 7.1.4.2.2",
-		Source:        CABFBaselineRequirements,
-		EffectiveDate: util.CABGivenNameDate,
+		Description:   "Subscriber Certificate: subject:localityName MUST appear if subject:stateOrProvinceName field is absent",
+		Citation:      "MRfCSC: 9.2.4.c",
+		Source:        MinimumRequirementsForCodeSigningCertificates,
+		EffectiveDate: util.MRfCSCEffectiveDate,
 		Lint:          &subCertLocalityNameMustAppear{},
 	})
 }
