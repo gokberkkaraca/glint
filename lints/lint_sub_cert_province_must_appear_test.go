@@ -18,6 +18,7 @@ import (
 	"testing"
 )
 
+// TODO Modify tests according to changes for code signing certificates.
 // As a note, these certificates were not built, but instead grabbed from censys.io/query
 // using the following query to find the raw data and match it to validity period
 // select raw, parsed.validity.start from certificates.pemtificates where parsed.signature_algorithm.oid = "1.2.840.113549.1.1.5" limit 200
