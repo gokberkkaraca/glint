@@ -48,7 +48,7 @@ func (l *IssuerRDNHasMultipleAttribute) Execute(c *x509.Certificate) *LintResult
 
 func init() {
 	RegisterLint(&Lint{
-		Name:          "w_multiple_issuer_rdn",
+		Name:          "w_issuer_multiple_rdn",
 		Description:   "Certificates should not have multiple attributes in a single RDN (issuer)",
 		Citation:      "awslabs certlint",
 		Source:        AWSLabs,

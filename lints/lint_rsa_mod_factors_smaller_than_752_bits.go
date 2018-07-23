@@ -48,7 +48,7 @@ func (l *rsaModSmallFactor) Execute(c *x509.Certificate) *LintResult {
 
 func init() {
 	RegisterLint(&Lint{
-		Name:          "w_rsa_mod_factors_smaller_than_752",
+		Name:          "w_rsa_mod_factors_smaller_than_752_bits",
 		Description:   "RSA: Modulus SHOULD also have the following characteristics: no factors smaller than 752",
 		Citation:      "BRs: 6.1.6",
 		Source:        CABFBaselineRequirements,
