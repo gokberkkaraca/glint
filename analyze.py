@@ -9,7 +9,15 @@ for lint in glob.glob('lints/lint*'):
     if "test" in lint:  # Skip the file if it is a test file
         continue
     else:  # Create a dictionary that includes all possible results
-        lint_dictionary[lint] = {"pass": 0, "notice": 0, "warn": 0, "error": 0, "NA": 0, "NE": 0}
+        lint_dictionary[lint] = {
+            "pass": 0,
+            "notice": 0,
+            "warn": 0,
+            "error": 0,
+            "NA": 0,
+            "NE": 0,
+            "certificates_causing_errors": []
+        }
 
 # Parse result of each certificate to update lint dictionary
 for file in glob.glob('pem_certificates/certs_newer_2017/*.json'):
@@ -30,6 +38,7 @@ for file in glob.glob('pem_certificates/certs_newer_2017/*.json'):
             lint_dictionary[lint]["warn"] += 1
         elif json_file[lint]['result'] == "error":
             lint_dictionary[lint]["error"] += 1
+            lint_dictionary[lint]["certificates_causing_errors"].append(file.split("/")[2].split(".")[0])
         elif json_file[lint]['result'] == "NA":
             lint_dictionary[lint]["NA"] += 1
         elif json_file[lint]['result'] == "NE":

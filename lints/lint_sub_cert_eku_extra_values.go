@@ -14,6 +14,7 @@ package lints
  * permissions and limitations under the License.
  */
 
+ // TODO This lint is changed to check if the certificate is a code signing certificate or not, document properly
 /*******************************************************************************************************
 BRs: 7.1.2.3
 extKeyUsage (required)
@@ -38,10 +39,7 @@ func (l *subExtKeyUsageLegalUsage) CheckApplies(c *x509.Certificate) bool {
 func (l *subExtKeyUsageLegalUsage) Execute(c *x509.Certificate) *LintResult {
 	// Add actual lint here
 	for _, kp := range c.ExtKeyUsage {
-		if kp == x509.ExtKeyUsageServerAuth ||
-			kp == x509.ExtKeyUsageClientAuth ||
-			kp == x509.ExtKeyUsageEmailProtection {
-			// If we find any of these three, considered passing, continue
+		if kp == x509.ExtKeyUsageCodeSigning{
 			continue
 		} else {
 			// A bad usage was found, report and leave
