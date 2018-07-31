@@ -33,13 +33,13 @@ func (l *subExtKeyUsageLegalUsage) Initialize() error {
 }
 
 func (l *subExtKeyUsageLegalUsage) CheckApplies(c *x509.Certificate) bool {
-	return c.ExtKeyUsage != nil
+	return c.ExtKeyUsage != nil && util.IsCodeSigningCert(c)
 }
 
 func (l *subExtKeyUsageLegalUsage) Execute(c *x509.Certificate) *LintResult {
 	// Add actual lint here
 	for _, kp := range c.ExtKeyUsage {
-		if kp == x509.ExtKeyUsageCodeSigning{
+		if kp == x509.ExtKeyUsageMicrosoftDocumentSigning || kp == x509.ExtKeyUsageMicrosoftLifetimeSigning || kp == x509.ExtKeyUsageEmailProtection{
 			continue
 		} else {
 			// A bad usage was found, report and leave
@@ -53,10 +53,10 @@ func (l *subExtKeyUsageLegalUsage) Execute(c *x509.Certificate) *LintResult {
 func init() {
 	RegisterLint(&Lint{
 		Name:          "w_sub_cert_eku_extra_values",
-		Description:   "Subscriber Certificate: extKeyUsage values other than id-kp-serverAuth, id-kp-clientAuth, and id-kp-emailProtection SHOULD NOT be present.",
-		Citation:      "BRs: 7.1.2.3",
-		Source:        CABFBaselineRequirements,
-		EffectiveDate: util.CABEffectiveDate,
+		Description:   "Subscriber Certificate: extKeyUsage values other than id-kp-documentSigning, id-kp-lifetimeSigning, and id-kp-emailProtection SHOULD NOT be present.",
+		Citation:      "MRfCSC: Appendix B.3.F",
+		Source:        MinimumRequirementsForCodeSigningCertificates,
+		EffectiveDate: util.MRfCSCEffectiveDate,
 		Lint:          &subExtKeyUsageLegalUsage{},
 	})
 }
