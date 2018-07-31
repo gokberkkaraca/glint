@@ -44,7 +44,7 @@ func (l *cscCertificatePolicyIdentifierMissing) Execute(c *x509.Certificate) *Li
 
 func init() {
 	RegisterLint(&Lint{
-		Name:          "e_csc_cert_policy_identifier_missing",
+		Name:          "e_csc_certificate_policy_identifier_missing",
 		Description:   "certificatePolicies:policyIdentifier is required",
 		Citation:      "MRfCSC: Appendix B.3.A",
 		Source:        MinimumRequirementsForCodeSigningCertificates,

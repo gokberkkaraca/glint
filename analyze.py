@@ -62,7 +62,7 @@ for lint in lint_dictionary:
 
 # Print results to console and a file
 result = json.dumps(lint_dictionary, indent=4) + "\n"
-with open("certs_newer_2017.txt", "w") as file:
+with open("result.txt", "w") as file:
     file.write(result)
 print(result)
 

@@ -39,7 +39,7 @@ func (l *subExtKeyUsageLegalUsage) CheckApplies(c *x509.Certificate) bool {
 func (l *subExtKeyUsageLegalUsage) Execute(c *x509.Certificate) *LintResult {
 	// Add actual lint here
 	for _, kp := range c.ExtKeyUsage {
-		if kp == x509.ExtKeyUsageMicrosoftDocumentSigning || kp == x509.ExtKeyUsageMicrosoftLifetimeSigning || kp == x509.ExtKeyUsageEmailProtection{
+		if kp == x509.ExtKeyUsageMicrosoftDocumentSigning || kp == x509.ExtKeyUsageMicrosoftLifetimeSigning || kp == x509.ExtKeyUsageEmailProtection || kp == x509.ExtKeyUsageCodeSigning{
 			continue
 		} else {
 			// A bad usage was found, report and leave
