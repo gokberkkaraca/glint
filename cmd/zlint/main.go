@@ -58,9 +58,6 @@ func init() {
 
 func main() {
 
-	db, err = sql.Open("sqlite3", "./lint_results.db")
-	checkDatabaseError(err)
-
 	if listLintsJSON {
 		zlint.EncodeLintDescriptionsToJSON(os.Stdout)
 		return
@@ -80,22 +77,33 @@ func main() {
 		return
 	}
 
+
+	db, err = sql.Open("sqlite3", "./lint_results.db")
+	checkDatabaseError(err)
+
+	insertLints()
+
 	var inform = strings.ToLower(format)
 	if flag.NArg() < 1 || flag.Arg(0) == "-" {
 		lint(os.Stdin, inform)
 	} else {
-		for _, filePath := range flag.Args() {
+		pathToCertificates := flag.Arg(0)
+		files, err := ioutil.ReadDir(pathToCertificates)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, filePath := range files {
 			var inputFile *os.File
 			var err error
-			inputFile, err = os.Open(filePath)
+			inputFile, err = os.Open(pathToCertificates + filePath.Name())
 			if err != nil {
 				log.Fatalf("unable to open file %s: %s", filePath, err)
 			}
 			var cert_fmt = inform
 			switch {
-			case strings.HasSuffix(filePath, ".der"):
+			case strings.HasSuffix(filePath.Name(), ".der"):
 				cert_fmt = "der"
-			case strings.HasSuffix(filePath, ".pem"):
+			case strings.HasSuffix(filePath.Name(), ".pem"):
 				cert_fmt = "pem"
 			}
 			lint(inputFile, cert_fmt)
@@ -136,7 +144,10 @@ func lint(inputFile *os.File, inform string) {
 
 	insertCertificate(inputFile.Name(), c)
 
-	zlintResult := zlint.LintCertificate(c)
+	zlint.LintCertificate(c)
+}
+
+func printResultsToConsole(zlintResult *zlint.ResultSet) {
 	jsonBytes, err := json.Marshal(zlintResult.Results)
 	if err != nil {
 		log.Fatalf("unable to encode lints JSON: %s", err)
@@ -159,6 +170,15 @@ func insertCertificate(certID string, certificate *x509.Certificate) {
 	checkDatabaseError(err)
 	_, err = stmt.Exec(certID, certificate.Issuer.Organization[0], certificate.NotBefore)
 	checkDatabaseError(err)
+}
+
+func insertLints() {
+	for _, lint := range lints.Lints {
+		stmt, err := db.Prepare("INSERT OR IGNORE INTO lints(lint_name, lint_source, lint_effective_date) VALUES(?,?,?)")
+		checkDatabaseError(err)
+		_, err = stmt.Exec(lint.Name, lint.Source, lint.EffectiveDate)
+		checkDatabaseError(err)
+	}
 }
 
 func checkDatabaseError(err error) {
