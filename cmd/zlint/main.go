@@ -30,6 +30,8 @@ import (
 	"github.com/zmap/zcrypto/x509"
 	"github.com/zmap/zlint"
 	"github.com/zmap/zlint/lints"
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var ( // flags
@@ -37,6 +39,8 @@ var ( // flags
 	listLintsSchema bool
 	prettyprint     bool
 	format          string
+	db *sql.DB
+	err 			error
 )
 
 func init() {
@@ -53,6 +57,9 @@ func init() {
 }
 
 func main() {
+
+	db, err = sql.Open("sqlite3", "./lint_results.db")
+	checkDatabaseError(err)
 
 	if listLintsJSON {
 		zlint.EncodeLintDescriptionsToJSON(os.Stdout)
@@ -127,6 +134,8 @@ func lint(inputFile *os.File, inform string) {
 		log.Fatalf("unable to parse certificate: %s", err)
 	}
 
+	insertCertificate(inputFile.Name(), c)
+
 	zlintResult := zlint.LintCertificate(c)
 	jsonBytes, err := json.Marshal(zlintResult.Results)
 	if err != nil {
@@ -143,4 +152,18 @@ func lint(inputFile *os.File, inform string) {
 	}
 	os.Stdout.Write([]byte{'\n'})
 	os.Stdout.Sync()
+}
+
+func insertCertificate(certID string, certificate *x509.Certificate) {
+	stmt, err := db.Prepare("INSERT INTO certificates(certificate_id, certificate_issuer, certificate_date) VALUES(?, ?, ?)")
+	checkDatabaseError(err)
+	_, err = stmt.Exec(certID, certificate.Issuer.Organization[0], certificate.NotBefore)
+	checkDatabaseError(err)
+}
+
+func checkDatabaseError(err error) {
+	if err != nil {
+		fmt.Println("Operation failed")
+		panic(err)
+	}
 }
