@@ -144,7 +144,8 @@ func lint(inputFile *os.File, inform string) {
 
 	insertCertificate(inputFile.Name(), c)
 
-	zlint.LintCertificate(c)
+	resultSet := zlint.LintCertificate(c)
+	insertResults(inputFile.Name(), resultSet)
 }
 
 func printResultsToConsole(zlintResult *zlint.ResultSet) {
@@ -177,6 +178,15 @@ func insertLints() {
 		stmt, err := db.Prepare("INSERT OR IGNORE INTO lints(lint_name, lint_source, lint_effective_date) VALUES(?,?,?)")
 		checkDatabaseError(err)
 		_, err = stmt.Exec(lint.Name, lint.Source, lint.EffectiveDate)
+		checkDatabaseError(err)
+	}
+}
+
+func insertResults(certID string, resultSet *zlint.ResultSet) {
+	for lint, result := range resultSet.Results {
+		stmt, err := db.Prepare("INSERT INTO results(certificate_id, lint_name, result) VALUES(?,?,?)")
+		checkDatabaseError(err)
+		_, err = stmt.Exec(certID, lint, result.Status.String())
 		checkDatabaseError(err)
 	}
 }
