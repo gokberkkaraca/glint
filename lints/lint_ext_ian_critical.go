@@ -22,7 +22,7 @@ Issuer Alternative Name
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type ExtIANCritical struct{}

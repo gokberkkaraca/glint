@@ -25,7 +25,7 @@ marked critical, and it MUST contain the HTTP URL of the Issuing CA’s OCSP res
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subCertAiaMissing struct{}

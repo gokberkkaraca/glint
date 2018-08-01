@@ -23,7 +23,7 @@ URL of the CA’s CRL service.
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subCrlDistCrit struct{}

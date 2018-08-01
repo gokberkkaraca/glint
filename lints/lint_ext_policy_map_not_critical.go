@@ -22,7 +22,7 @@ This extension MAY be supported by CAs and/or applications.
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type policyMapCritical struct{}

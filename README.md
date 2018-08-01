@@ -1,8 +1,8 @@
 ZLint
 =====
 
-[![Build Status](https://travis-ci.org/zmap/zlint.svg?branch=master)](https://travis-ci.org/zmap/zlint)
-[![Go Report Card](https://goreportcard.com/badge/github.com/zmap/zlint)](https://goreportcard.com/report/github.com/zmap/zlint)
+[![Build Status](https://travis-ci.org/gokberkkaraca/glint.svg?branch=master)](https://travis-ci.org/gokberkkaraca/glint)
+[![Go Report Card](https://goreportcard.com/badge/github.com/gokberkkaraca/glint)](https://goreportcard.com/report/github.com/gokberkkaraca/glint)
 
 ZLint is a X.509 certificate linter written in Go that checks for consistency
 with [RFC 5280](https://www.ietf.org/rfc/rfc5280.txt) and the CA/Browser Forum
@@ -22,7 +22,7 @@ command-line certificate parser that links against ZLint.
 
 Example ZLint CLI usage:
 
-	go get github.com/zmap/zlint/cmd/zlint
+	go get github.com/gokberkkaraca/glint/cmd/zlint
 	zlint mycert.pem
 
 
@@ -34,7 +34,7 @@ ZLint can also be used as a library:
 ```go
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint"
+	"github.com/gokberkkaraca/glint"
 )
 
 parsed, err := x509.ParseCertificate(raw)
@@ -46,7 +46,7 @@ zlintResultSet := zlint.LintCertificate(parsed)
 ```
 
 
-See https://github.com/zmap/zlint/blob/master/cmd/zlint/main.go for an example.
+See https://github.com/gokberkkaraca/glint/blob/master/cmd/zlint/main.go for an example.
 
 
 Adding New Lints

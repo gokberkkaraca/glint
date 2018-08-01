@@ -20,7 +20,7 @@ The CRL distribution points extension identifies how CRL information is obtained
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type ExtCrlDistributionMarkedCritical struct{}

@@ -22,7 +22,7 @@ Either the value serverAuth [RFC5280] or anyExtendedKeyUsage MUST NOT be present
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subExtKeyUsageProhibitedUsage struct{}

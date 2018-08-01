@@ -24,7 +24,7 @@ CAs complying with these Requirements MAY also assert one of the reserved policy
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subCertPolicyEmpty struct{}

@@ -32,7 +32,7 @@ encoding internationalized domain names are specified in Section 7.2.
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type IANSpace struct{}

@@ -20,7 +20,7 @@ import (
 	"crypto/rsa"
 
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subCaModSize struct{}

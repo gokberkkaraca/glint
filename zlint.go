@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/lints"
+	"github.com/gokberkkaraca/glint/lints"
 )
 
 const Version int64 = 3

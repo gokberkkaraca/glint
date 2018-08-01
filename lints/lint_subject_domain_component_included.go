@@ -21,7 +21,7 @@ This field MUST not be present in a Code Signing Certificate
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subjectDomainComponent struct{}

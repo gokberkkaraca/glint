@@ -24,7 +24,7 @@ The subject directory attributes extension is used to convey
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subDirAttrCrit struct{}

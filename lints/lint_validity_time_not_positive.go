@@ -20,7 +20,7 @@ Change this to match source TEXT
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type validityNegative struct{}

@@ -27,7 +27,7 @@ The cA boolean indicates whether the certified public key may be used
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type keyUsageCertSignNoCa struct{}

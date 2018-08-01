@@ -28,8 +28,8 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint"
-	"github.com/zmap/zlint/lints"
+	"github.com/gokberkkaraca/glint"
+	"github.com/gokberkkaraca/glint/lints"
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 )

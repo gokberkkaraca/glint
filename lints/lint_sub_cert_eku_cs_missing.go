@@ -22,7 +22,7 @@ id-kp-codeSigning [RFC5280] MUST be present.
 
 import (
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/util"
+	"github.com/gokberkkaraca/glint/util"
 )
 
 type subExtKeyUsageCodeSigningMissing struct{}
