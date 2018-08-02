@@ -181,10 +181,21 @@ func insertCertificate(certID string, certificate *x509.Certificate) {
 }
 
 func insertLints() {
+
+	var sourceMap = map[lints.LintSource]string {
+		0: "UnknownLintSource",
+		1: "CABFBaselineRequirements",
+		2: "MinimumRequirementsForCodeSigningCertificates",
+		3: "RFC5280",
+		4: "RFC5891",
+		5: "ZLint",
+		6: "AWSLabs",
+	}
+
 	for _, lint := range lints.Lints {
 		stmt, err := db.Prepare("INSERT OR IGNORE INTO lints(lint_name, lint_source, lint_effective_date) VALUES(?,?,?)")
 		checkDatabaseError(err)
-		_, err = stmt.Exec(lint.Name, lint.Source, lint.EffectiveDate)
+		_, err = stmt.Exec(lint.Name, sourceMap[lint.Source], lint.EffectiveDate)
 		checkDatabaseError(err)
 	}
 }
