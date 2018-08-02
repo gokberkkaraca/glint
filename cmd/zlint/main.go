@@ -88,10 +88,13 @@ func main() {
 		lint(os.Stdin, inform)
 	} else {
 		pathToCertificates := flag.Arg(0)
+		fmt.Println("Starting to read directory.")
 		files, err := ioutil.ReadDir(pathToCertificates)
 		if err != nil {
 			log.Fatal(err)
 		}
+		fmt.Println("All files are read, starting certificate analysis.")
+
 		for _, filePath := range files {
 			var inputFile *os.File
 			var err error
@@ -113,6 +116,10 @@ func main() {
 }
 
 func lint(inputFile *os.File, inform string) {
+	splitPath := strings.Split(inputFile.Name(), "/")
+	certID := splitPath[len(splitPath) - 1]
+
+	fmt.Println("Analysing certificate: ", certID)
 	fileBytes, err := ioutil.ReadAll(inputFile)
 	if err != nil {
 		log.Fatalf("unable to read file %s: %s", inputFile.Name(), err)
@@ -142,10 +149,10 @@ func lint(inputFile *os.File, inform string) {
 		log.Fatalf("unable to parse certificate: %s", err)
 	}
 
-	insertCertificate(inputFile.Name(), c)
+	insertCertificate(certID, c)
 
 	resultSet := zlint.LintCertificate(c)
-	insertResults(inputFile.Name(), resultSet)
+	insertResults(certID, resultSet)
 }
 
 func printResultsToConsole(zlintResult *zlint.ResultSet) {
@@ -167,8 +174,6 @@ func printResultsToConsole(zlintResult *zlint.ResultSet) {
 }
 
 func insertCertificate(certID string, certificate *x509.Certificate) {
-	splitPath := strings.Split(certID, "/")
-	extractedCertID := splitPath[len(splitPath) - 1]
 
 	var organizationName string
 	if len(certificate.Subject.Organization) != 0 {
@@ -176,7 +181,7 @@ func insertCertificate(certID string, certificate *x509.Certificate) {
 	}
 	stmt, err := db.Prepare("INSERT INTO certificates(certificate_id, certificate_issuer, certificate_date) VALUES(?, ?, ?)")
 	checkDatabaseError(err)
-	_, err = stmt.Exec(extractedCertID, organizationName, certificate.NotBefore)
+	_, err = stmt.Exec(certID, organizationName, certificate.NotBefore)
 	checkDatabaseError(err)
 }
 
@@ -201,13 +206,11 @@ func insertLints() {
 }
 
 func insertResults(certID string, resultSet *zlint.ResultSet) {
-	splitPath := strings.Split(certID, "/")
-	extractedCertID := splitPath[len(splitPath) - 1]
 
 	for lint, result := range resultSet.Results {
 		stmt, err := db.Prepare("INSERT INTO results(certificate_id, lint_name, result) VALUES(?,?,?)")
 		checkDatabaseError(err)
-		_, err = stmt.Exec(extractedCertID, lint, result.Status.String())
+		_, err = stmt.Exec(certID, lint, result.Status.String())
 		checkDatabaseError(err)
 	}
 }
