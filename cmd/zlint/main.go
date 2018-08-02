@@ -167,9 +167,16 @@ func printResultsToConsole(zlintResult *zlint.ResultSet) {
 }
 
 func insertCertificate(certID string, certificate *x509.Certificate) {
+	splitPath := strings.Split(certID, "/")
+	extractedCertID := splitPath[len(splitPath) - 1]
+
+	var organizationName string
+	if len(certificate.Subject.Organization) != 0 {
+		organizationName = certificate.Subject.Organization[0]
+	}
 	stmt, err := db.Prepare("INSERT INTO certificates(certificate_id, certificate_issuer, certificate_date) VALUES(?, ?, ?)")
 	checkDatabaseError(err)
-	_, err = stmt.Exec(certID, certificate.Issuer.Organization[0], certificate.NotBefore)
+	_, err = stmt.Exec(extractedCertID, organizationName, certificate.NotBefore)
 	checkDatabaseError(err)
 }
 
