@@ -190,10 +190,13 @@ func insertLints() {
 }
 
 func insertResults(certID string, resultSet *zlint.ResultSet) {
+	splitPath := strings.Split(certID, "/")
+	extractedCertID := splitPath[len(splitPath) - 1]
+
 	for lint, result := range resultSet.Results {
 		stmt, err := db.Prepare("INSERT INTO results(certificate_id, lint_name, result) VALUES(?,?,?)")
 		checkDatabaseError(err)
-		_, err = stmt.Exec(certID, lint, result.Status.String())
+		_, err = stmt.Exec(extractedCertID, lint, result.Status.String())
 		checkDatabaseError(err)
 	}
 }
