@@ -94,7 +94,7 @@ func main() {
 			log.Fatal(err)
 		}
 		fmt.Println("All files are read, starting certificate analysis.")
-
+		var counter = 0
 		for _, filePath := range files {
 			var inputFile *os.File
 			var err error
@@ -109,6 +109,8 @@ func main() {
 			case strings.HasSuffix(filePath.Name(), ".pem"):
 				cert_fmt = "pem"
 			}
+			fmt.Println("Analysing certificate: ", inputFile.Name(), counter)
+			counter++
 			lint(inputFile, cert_fmt)
 			inputFile.Close()
 		}
@@ -119,7 +121,6 @@ func lint(inputFile *os.File, inform string) {
 	splitPath := strings.Split(inputFile.Name(), "/")
 	certID := splitPath[len(splitPath) - 1]
 
-	fmt.Println("Analysing certificate: ", certID)
 	fileBytes, err := ioutil.ReadAll(inputFile)
 	if err != nil {
 		log.Fatalf("unable to read file %s: %s", inputFile.Name(), err)
