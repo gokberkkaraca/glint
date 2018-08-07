@@ -1,72 +1,60 @@
-import json
-import glob
+import sqlite3
 
-lint_dictionary = {}
 
-# Create a lint dictionary from files in ./lints/ directory
-for lint in glob.glob('lints/lint*'):
-    lint = lint[11:][:-3]  # Parse file name to extract lint name
-    if "test" in lint:  # Skip the file if it is a test file
-        continue
-    else:  # Create a dictionary that includes all possible results
-        lint_dictionary[lint] = {
-            "pass": 0,
-            "notice": 0,
-            "warn": 0,
-            "error": 0,
-            "NA": 0,
-            "NE": 0,
-            "certificates_causing_errors": []
-        }
+db = sqlite3.connect('lint_results.db')
+print("Connected to database.")
 
-# Parse result of each certificate to update lint dictionary
-for file in glob.glob('pem_certificates/certs_newer_2017/*.json'):
-    file_content = open(file).read()
-    if file_content == "":
-        continue
-    json_file = json.loads(file_content)
-    for key in list(json_file):  # Modify lint message ignore first 3 characters
-        json_file[key[2:]] = json_file[key]
-        del json_file[key]
+lints_to_be_analyzed_list = [
+    "subject_common_name_missing",
+    "subject_domain_component_included",
+    "subject_organization_name_missing",
+    "sub_cert_locality_name_must_appear",
+    "sub_cert_province_must_appear",
+    "sub_cert_country_name_must_appear",
+    "sub_cert_eku_extra_values",
+    "csc_cert_policy_missing",
+    "csc_certificate_policy_identifier_missing",
+    "csc_certificate_policy_marked_critical",
+    "sub_cert_eku_prohibited_usage",
+    "sub_cert_eku_cs_missing",
+    "ext_key_usage_missing",
+    "sub_cert_key_usage_digital_signature_bit_not_set",
+    "postal_code_included_in_other_fields",
+]
+print("Registered the lints to be analyzed list")
 
-    for lint in lint_dictionary:  # Update the result of each lint with the results of current file
-        if json_file[lint]['result'] == "pass":
-            lint_dictionary[lint]["pass"] += 1
-        elif json_file[lint]['result'] == "info":
-            lint_dictionary[lint]["notice"] += 1
-        elif json_file[lint]['result'] == "warn":
-            lint_dictionary[lint]["warn"] += 1
-        elif json_file[lint]['result'] == "error":
-            lint_dictionary[lint]["error"] += 1
-            lint_dictionary[lint]["certificates_causing_errors"].append(file.split("/")[2].split(".")[0])
-        elif json_file[lint]['result'] == "NA":
-            lint_dictionary[lint]["NA"] += 1
-        elif json_file[lint]['result'] == "NE":
-            lint_dictionary[lint]["NE"] += 1
+ca_list = [row[0] for row in db.execute("SELECT DISTINCT certificate_issuer FROM certificates;")]
+print("CA list retrieved from database")
 
-# Find highest info
-highest_pass_lint = list(lint_dictionary.keys())[0]
-highest_info_lint = list(lint_dictionary.keys())[0]
-highest_warn_lint = list(lint_dictionary.keys())[0]
-highest_error_lint = list(lint_dictionary.keys())[0]
+years = list(range(2015, 2019))
+months = list(range(1, 13))
 
-for lint in lint_dictionary:
-    if lint_dictionary[lint]["pass"] > lint_dictionary[highest_pass_lint]["pass"]:
-        highest_pass_lint = lint
-    if lint_dictionary[lint]["warn"] > lint_dictionary[highest_warn_lint]["warn"]:
-        highest_warn_lint = lint
-    if lint_dictionary[lint]["notice"] > lint_dictionary[highest_info_lint]["notice"]:
-        highest_info_lint = lint
-    if lint_dictionary[lint]["error"] > lint_dictionary[highest_error_lint]["error"]:
-        highest_error_lint = lint
+filter_results = True
 
-# Print results to console and a file
-result = json.dumps(lint_dictionary, indent=4) + "\n"
-with open("result.txt", "w") as file:
-    file.write(result)
-print(result)
+for ca in ca_list:
+    print("\nAnalysis results for: ", ca)
+    for lint in lints_to_be_analyzed_list:
+        certificates_issued_by_ca = [row for row in db.execute("SELECT certificate_id, lint_name, certificate_date, result FROM certificates NATURAL JOIN results WHERE certificate_issuer=? AND lint_name LIKE '%"+ lint + "%'", (ca,))]
+        result_list = list(map(lambda item: item[3], certificates_issued_by_ca))
+        total = len(result_list)
+        _error = len(list(filter(lambda item: item=='error', result_list)))
+        _pass = len(list(filter(lambda item: item=='pass', result_list)))
+        _info = len(list(filter(lambda item: item=='info', result_list)))
+        _warn = len(list(filter(lambda item: item=='warn', result_list)))
+        _NA = len(list(filter(lambda item: item=='NA', result_list)))
+        _NE = len(list(filter(lambda item: item=='NE', result_list)))
+        success_rate = (_pass + _NA + _NE)/total
+        check = False
+        if success_rate != 1.0:
+            check = True
 
-print("Highest pass lint: {}, {}".format(highest_pass_lint, lint_dictionary[highest_pass_lint]["pass"]))
-print("Highest info lint: {}, {}".format(highest_info_lint, lint_dictionary[highest_info_lint]["notice"]))
-print("Highest warn lint: {}, {}".format(highest_warn_lint, lint_dictionary[highest_warn_lint]["warn"]))
-print("Highest error lint: {}, {}".format(highest_error_lint, lint_dictionary[highest_error_lint]["error"]))
+        if filter_results:
+            if check:
+                print("{}, Total: {}, Error: {}, Pass: {}, Info: {}, Warn: {}, NA: {}, NE: {}, Success: {}"
+                      .format(lint, total, _error, _pass, _info, _warn, _NA, _NE, success_rate))
+        else:
+            print("{}, Total: {}, Error: {}, Pass: {}, Info: {}, Warn: {}, NA: {}, NE: {}, Success: {}"
+                  .format(lint, total, _error, _pass, _info, _warn, _NA, _NE, success_rate))
+
+
+

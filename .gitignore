@@ -119,6 +119,7 @@ vendor/
 cmd/zlint/zlint
 
 result.txt
+results_filtered.txt
 der_certificates/
 pem_certificates/
 txt_certificates/
