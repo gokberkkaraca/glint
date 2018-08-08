@@ -30,12 +30,11 @@ func (l *subCertProvinceMustAppear) CheckApplies(c *x509.Certificate) bool {
 }
 
 func (l *subCertProvinceMustAppear) Execute(c *x509.Certificate) *LintResult {
-	if len(c.Subject.Locality) == 0 {
-		if len(c.Subject.Province) == 0 {
-			return &LintResult{Status: Error}
-		}
+	if !util.TypeInName(&c.Subject, util.StateOrProvinceNameOID) && !util.TypeInName(&c.Subject, util.LocalityNameOID) {
+		return &LintResult{Status: Error}
+	} else {
+		return &LintResult{Status: Pass}
 	}
-	return &LintResult{Status: Pass}
 }
 
 func init() {
