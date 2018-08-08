@@ -177,8 +177,8 @@ func printResultsToConsole(zlintResult *zlint.ResultSet) {
 func insertCertificate(certID string, certificate *x509.Certificate) {
 
 	var organizationName string
-	if len(certificate.Subject.Organization) != 0 {
-		organizationName = certificate.Subject.Organization[0]
+	if len(certificate.Issuer.Organization) != 0 {
+		organizationName = certificate.Issuer.Organization[0]
 	}
 	stmt, err := db.Prepare("INSERT INTO certificates(certificate_id, certificate_issuer, certificate_date) VALUES(?, ?, ?)")
 	checkDatabaseError(err)
