@@ -29,7 +29,7 @@ print("CA list retrieved from database")
 years = list(range(2015, 2019))
 months = list(range(1, 13))
 
-filter_results = True
+filter_results = False
 
 for ca in ca_list:
     print("\nAnalysis results for: ", ca)
@@ -55,6 +55,6 @@ for ca in ca_list:
         else:
             print("{}, Total: {}, Error: {}, Pass: {}, Info: {}, Warn: {}, NA: {}, NE: {}, Success: {}"
                   .format(lint, total, _error, _pass, _info, _warn, _NA, _NE, success_rate))
-
+    print("\n----------------------------------------------------------------------------------------------")
 
 
