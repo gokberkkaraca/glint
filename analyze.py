@@ -43,7 +43,10 @@ for ca in ca_list:
         _warn = len(list(filter(lambda item: item=='warn', result_list)))
         _NA = len(list(filter(lambda item: item=='NA', result_list)))
         _NE = len(list(filter(lambda item: item=='NE', result_list)))
-        success_rate = (_pass + _NA + _NE)/total
+        if total != 0:
+            success_rate = (_pass + _NA + _NE)/total
+        else:
+            success_rate = 1.0
         check = False
         if success_rate != 1.0:
             check = True
