@@ -1,7 +1,6 @@
 import sqlite3
 import json
 
-
 db = sqlite3.connect('lint_results.db')
 print("Connected to database.")
 
@@ -28,9 +27,9 @@ ca_list = [row[0] for row in db.execute(
     "SELECT DISTINCT certificate_issuer FROM certificates where certificate_date > '2016';")]
 print("CA list retrieved from database")
 
-years = list(range(2015, 2019))
-months = list(range(1, 13))
-dates = ['2016-01', '2016-04', '2016-07', '2016-10', '2017-01', '2017-04']
+dates = ["2016-01", "2016-02", "2016-03", "2016-04", "2016-05", "2016-06",
+         "2016-07", "2016-08", "2016-09", "2016-10", "2016-11", "2016-12",
+         "2017-01", "2017-02", "2017-03", "2017-04", "2017-05", "2017-06"]
 
 all_results = {}
 for ca in ca_list:
@@ -40,6 +39,7 @@ for ca in ca_list:
 
 
 for date in dates:
+    print("Collecting data for: ", date)
     for ca in ca_list:
         for lint in lints_to_be_analyzed_list:
             certificates_issued_by_ca = [row for row in db.execute(
@@ -56,8 +56,9 @@ for date in dates:
 
             if total != 0:
                 success_rate = (_pass + _NA + _NE)/total
+                all_results[ca][lint].update({date: success_rate})
             else:
                 success_rate = 1.0
-            all_results[ca][lint].update({date: success_rate})
 
-print(json.dumps(all_results, indent=4))
+with open("success_rates_each_month.json", "w") as file:
+    json.dump(all_results, file, indent=4)
