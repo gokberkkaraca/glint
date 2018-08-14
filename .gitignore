@@ -125,3 +125,5 @@ pem_certificates/
 txt_certificates/
 test.sh
 lint_results.db
+success_rates*
+plots/
