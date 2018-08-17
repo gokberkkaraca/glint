@@ -22,7 +22,7 @@ lint_coloring_scheme = {
 }
 
 
-json_string = open("success_rates_each_month.json").read()
+json_string = open("./result_analysis/success_rates_each_month.json").read()
 all_results = json.loads(json_string)
 
 for ca in all_results:

@@ -60,5 +60,5 @@ for date in dates:
             else:
                 success_rate = 1.0
 
-with open("success_rates_each_month.json", "w") as file:
+with open("./result_analysis/success_rates_each_month.json", "w") as file:
     json.dump(all_results, file, indent=4)
