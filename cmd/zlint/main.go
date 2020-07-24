@@ -26,12 +26,13 @@ import (
 	"sort"
 	"strings"
 
+	"database/sql"
+
 	log "github.com/Sirupsen/logrus"
-	"github.com/zmap/zcrypto/x509"
 	"github.com/gokberkkaraca/glint"
 	"github.com/gokberkkaraca/glint/lints"
-	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/zmap/zcrypto/x509"
 )
 
 var ( // flags
@@ -39,8 +40,8 @@ var ( // flags
 	listLintsSchema bool
 	prettyprint     bool
 	format          string
-	db *sql.DB
-	err 			error
+	db              *sql.DB
+	err             error
 )
 
 func init() {
@@ -77,9 +78,10 @@ func main() {
 		return
 	}
 
-
 	db, err = sql.Open("sqlite3", "./lint_results.db")
-	checkDatabaseError(err)
+	if err != nil {
+		panic(err)
+	}
 
 	insertLints()
 
@@ -119,7 +121,7 @@ func main() {
 
 func lint(inputFile *os.File, inform string) {
 	splitPath := strings.Split(inputFile.Name(), "/")
-	certID := splitPath[len(splitPath) - 1]
+	certID := splitPath[len(splitPath)-1]
 
 	fileBytes, err := ioutil.ReadAll(inputFile)
 	if err != nil {
@@ -180,15 +182,19 @@ func insertCertificate(certID string, certificate *x509.Certificate) {
 	if len(certificate.Issuer.Organization) != 0 {
 		organizationName = certificate.Issuer.Organization[0]
 	}
-	stmt, err := db.Prepare("INSERT INTO certificates(certificate_id, certificate_issuer, certificate_date) VALUES(?, ?, ?)")
-	checkDatabaseError(err)
-	_, err = stmt.Exec(certID, organizationName, certificate.NotBefore)
-	checkDatabaseError(err)
+	var subjectOrganizationName string
+	if len(certificate.Subject.Organization) != 0 {
+		subjectOrganizationName = certificate.Subject.Organization[0]
+	}
+	stmt, err := db.Prepare("INSERT INTO certificates(certificate_id, certificate_issuer, certificate_subject, certificate_date) VALUES(?, ?, ?, ?)")
+	checkDatabaseError(err, certID, "certId")
+	_, err = stmt.Exec(certID, organizationName, subjectOrganizationName, certificate.NotBefore)
+	checkDatabaseError(err, certID, "certId")
 }
 
 func insertLints() {
 
-	var sourceMap = map[lints.LintSource]string {
+	var sourceMap = map[lints.LintSource]string{
 		0: "UnknownLintSource",
 		1: "CABFBaselineRequirements",
 		2: "MinimumRequirementsForCodeSigningCertificates",
@@ -200,9 +206,9 @@ func insertLints() {
 
 	for _, lint := range lints.Lints {
 		stmt, err := db.Prepare("INSERT OR IGNORE INTO lints(lint_name, lint_source, lint_effective_date) VALUES(?,?,?)")
-		checkDatabaseError(err)
+		checkDatabaseError(err, lint.Name, "lintName")
 		_, err = stmt.Exec(lint.Name, sourceMap[lint.Source], lint.EffectiveDate)
-		checkDatabaseError(err)
+		checkDatabaseError(err, lint.Name, "lintName")
 	}
 }
 
@@ -210,15 +216,15 @@ func insertResults(certID string, resultSet *zlint.ResultSet) {
 
 	for lint, result := range resultSet.Results {
 		stmt, err := db.Prepare("INSERT INTO results(certificate_id, lint_name, result) VALUES(?,?,?)")
-		checkDatabaseError(err)
+		checkDatabaseError(err, certID, "certId")
 		_, err = stmt.Exec(certID, lint, result.Status.String())
-		checkDatabaseError(err)
+		checkDatabaseError(err, certID, "certId")
 	}
 }
 
-func checkDatabaseError(err error) {
+func checkDatabaseError(err error, identifier string, entityType string) {
 	if err != nil {
-		fmt.Println("Operation failed")
-		panic(err)
+		fmt.Println("Operation failed " + identifier + " " + entityType)
+		fmt.Println(err)
 	}
 }
